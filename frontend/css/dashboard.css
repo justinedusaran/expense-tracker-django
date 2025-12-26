@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #f9fafb;
+    color: #111827;
+}
+
+/* Navbar */
+.navbar {
+    background: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.navbar button {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.navbar button:hover {
+    background: #dc2626;
+}
+
+/* Main container */
+.container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.summary {
+    margin-bottom: 1.5rem;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Card */
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f3f4f6;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+th {
+    font-weight: 600;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+.empty {
+    text-align: center;
+    color: #9ca3af;
+}
