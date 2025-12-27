@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Dashboard | Expense Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/dashboard.css" />
 </head>
 
@@ -11,13 +12,19 @@
 
     <nav class="navbar">
         <h1>Expense Tracker</h1>
-        <button id="logoutBtn">Logout</button>
+        <button id="logoutBtn" class="btn logout">Logout</button>
     </nav>
 
     <main class="container">
         <section class="summary">
-            <h2>Your Expenses</h2>
-            <p class="subtitle">Track and manage your spending</p>
+            <div>
+                <h2>Your Expenses</h2>
+                <p class="subtitle">Track and manage your spending</p>
+            </div>
+
+            <button id="addExpenseBtn" class="btn primary">
+                + Add Expense
+            </button>
         </section>
 
         <section class="card">
@@ -28,11 +35,12 @@
                         <th>Category</th>
                         <th>Description</th>
                         <th>Amount</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="expensesTable">
                     <tr>
-                        <td colspan="4" class="empty">
+                        <td colspan="5" class="empty">
                             No expenses yet
                         </td>
                     </tr>
@@ -40,6 +48,27 @@
             </table>
         </section>
     </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="expenseModal" class="modal hidden">
+        <div class="modal-card">
+            <h3 id="modalTitle">Add Expense</h3>
+
+            <form id="expenseForm">
+                <input type="hidden" id="expenseId" />
+
+                <input type="date" id="date" required />
+                <input type="text" id="category" placeholder="Category" required />
+                <input type="text" id="description" placeholder="Description" />
+                <input type="number" id="amount" placeholder="Amount" required />
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn primary">Save</button>
+                    <button type="button" id="cancelBtn" class="btn ghost">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="js/dashboard.js"></script>
 </body>
