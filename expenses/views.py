@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .models import Category, Expense
 from .serializers import CategorySerializer, ExpenseSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -20,10 +20,10 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["category", "date"]
+    filterset_fields = ["category", "date"] 
 
     def get_queryset(self):
-        return Expense.objects.filter(user=self.request.user)
+        return Expense.objects.filter(user=self.request.user).select_related('category')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
