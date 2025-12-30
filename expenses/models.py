@@ -15,10 +15,9 @@ class Expense(models.Model):
         related_name="expenses"
     )
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField(auto_now_add=True)
-    note = models.TextField(blank=True, null=True)
+    date = models.DateField()
 
     def __str__(self):
         return f"{self.title} - {self.amount}"

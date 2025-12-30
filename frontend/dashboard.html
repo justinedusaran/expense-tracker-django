@@ -12,13 +12,16 @@
 
     <nav class="navbar">
         <h1>Expense Tracker</h1>
-        <button id="logoutBtn" class="btn logout">Logout</button>
+        <div class="nav-actions">
+            <a href="categories.html" class="btn ghost">Manage Categories</a>
+            <button id="logoutBtn" class="btn logout">Logout</button>
+        </div>
     </nav>
 
     <main class="container">
         <section class="summary">
             <div>
-                <h2>Your Expenses</h2>
+                <h2>Expenses</h2>
                 <p class="subtitle">Track and manage your spending</p>
             </div>
 
@@ -49,6 +52,19 @@
         </section>
     </main>
 
+    <div id="categoryModal" class="modal hidden">
+        <div class="modal-card">
+            <h3 id="modalTitle">Add Category</h3>
+    
+            <input type="text" id="newCategoryName" placeholder="Category name" />
+    
+            <div class="modal-actions">
+                <button id="saveCategoryBtn" class="btn primary">Save</button>
+                <button id="cancelCategoryBtn" class="btn ghost">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add/Edit Modal -->
     <div id="expenseModal" class="modal hidden">
         <div class="modal-card">
@@ -58,13 +74,15 @@
                 <input type="hidden" id="expenseId" />
 
                 <input type="date" id="date" required />
-                <input type="text" id="category" placeholder="Category" required />
+                <select id="category" required>
+                    <option value="">Select category</option>
+                </select>
                 <input type="text" id="description" placeholder="Description" />
                 <input type="number" id="amount" placeholder="Amount" required />
 
                 <div class="modal-actions">
                     <button type="submit" class="btn primary">Save</button>
-                    <button type="button" id="cancelBtn" class="btn ghost">Cancel</button>
+                    <button type="button" id="cancelBtn" class="btn primary">Cancel</button>
                 </div>
             </form>
         </div>

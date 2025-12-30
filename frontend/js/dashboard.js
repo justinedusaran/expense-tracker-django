@@ -4,6 +4,7 @@ if (!accessToken) window.location.href = "login.html";
 const table = document.getElementById("expensesTable");
 const modal = document.getElementById("expenseModal");
 const form = document.getElementById("expenseForm");
+const categorySelect = document.getElementById("category");
 
 // Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
@@ -15,6 +16,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 document.getElementById("addExpenseBtn").onclick = () => {
   form.reset();
   document.getElementById("expenseId").value = "";
+  loadCategories();
   modal.classList.remove("hidden");
 };
 
@@ -23,22 +25,46 @@ document.getElementById("cancelBtn").onclick = () => {
   modal.classList.add("hidden");
 };
 
-// Load expenses
-async function loadExpenses() {
-  const res = await fetch("http://127.0.0.1:8000/api/expenses/", {
+//Load categories
+async function loadCategories() {
+  const response = await fetch("http://127.0.0.1:8000/api/categories/", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
 
-  if (!res.ok) {
-    throw new Error("Unauthorized");
+  if (!response.ok) {
+    alert("Failed to load categories");
+    return;
   }
 
-  const data = await res.json();
+  const categories = await response.json();
+  categorySelect.innerHTML = `<option value="">Select category</option>`;
 
-  // IMPORTANT
-  renderExpenses(data.results ?? []);
+  categories.forEach((cat) => {
+    const option = document.createElement("option");
+    option.value = cat.id;
+    option.textContent = cat.name;
+    categorySelect.appendChild(option);
+  });
+}
+
+// Load expenses
+async function loadExpenses() {
+  const response = await fetch("http://127.0.0.1:8000/api/expenses/", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (response.status === 401) {
+    localStorage.clear();
+    window.location.href = "login.html";
+    return;
+  }
+
+  const data = await response.json();
+  renderExpenses(data);
 }
 
 function renderExpenses(expenses) {
@@ -78,31 +104,30 @@ async function deleteExpense(id) {
 }
 
 // Submit form
-form.onsubmit = async (e) => {
+form.onsubmit = async function (e) {
   e.preventDefault();
 
-  const id = document.getElementById("expenseId").value;
   const payload = {
     date: date.value,
-    category_name: category.value,
+    category: parseInt(category.value),
     description: description.value,
-    amount: amount.value,
+    amount: parseFloat(amount.value),
   };
 
-  const url = id
-    ? `http://127.0.0.1:8000/api/expenses/${id}/`
-    : `http://127.0.0.1:8000/api/expenses/`;
-
-  const method = id ? "PUT" : "POST";
-
-  await fetch(url, {
-    method,
+  const response = await fetch("http://127.0.0.1:8000/api/expenses/", {
+    method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
+
+  if (!response.ok) {
+    const err = await response.text();
+    alert("Failed to save expense:\n" + err);
+    return;
+  }
 
   modal.classList.add("hidden");
   loadExpenses();

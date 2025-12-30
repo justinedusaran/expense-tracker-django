@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Categories | Expense Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/categories.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <h1>Expense Tracker</h1>
+        <div class="nav-actions">
+            <a href="dashboard.html" class="btn ghost">Dashboard</a>
+            <button id="logoutBtn" class="btn logout">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="summary">
+            <div>
+                <h2>Categories</h2>
+                <p class="subtitle">Manage your expense categories</p>
+            </div>
+
+            <button id="openModalBtn" class="btn primary">
+                + Add Category
+            </button>
+        </section>
+
+        <section class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="categoryTable">
+                    <tr>
+                        <td colspan="2" class="empty">No categories yet</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Add/Edit Category Modal -->
+    <div id="categoryModal" class="modal hidden">
+        <div class="modal-card">
+            <h3 id="modalTitle">Add Category</h3>
+
+            <input type="text" id="categoryName" placeholder="Category name" required />
+
+            <div class="modal-actions">
+                <button id="saveCategoryBtn" class="btn primary">Save</button>
+                <button id="cancelBtn" class="btn ghost">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/categories.js"></script>
+</body>
+
+</html>
