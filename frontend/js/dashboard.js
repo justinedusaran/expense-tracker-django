@@ -5,129 +5,201 @@ const table = document.getElementById("expensesTable");
 const modal = document.getElementById("expenseModal");
 const form = document.getElementById("expenseForm");
 const categorySelect = document.getElementById("category");
+const filterStart = document.getElementById("filterStartDate");
+const filterEnd = document.getElementById("filterEndDate");
+const filterCat = document.getElementById("filterCategory");
+const deleteModal = document.getElementById("deleteModal");
+
+let idToDelete = null;
+let currentSortField = "-date";
 let editingExpenseId = null;
 
-// Logout
+// --- Event Listeners ---
+
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.clear();
   window.location.href = "login.html";
 });
 
-// Open modal (Add New)
 document.getElementById("addExpenseBtn").onclick = () => {
   editingExpenseId = null;
   form.reset();
-  document.getElementById("modalTitle").textContent = "Add Expense"; // Reset title
-  loadCategories();
+  document.getElementById("modalTitle").textContent = "Add Expense";
   modal.classList.remove("hidden");
 };
 
-// Close modal
 document.getElementById("cancelBtn").onclick = () => {
   modal.classList.add("hidden");
 };
 
-// Load categories
+document.getElementById("applyFiltersBtn").onclick = loadExpenses;
+
+document.getElementById("clearFiltersBtn").onclick = () => {
+  filterStart.value = "";
+  filterEnd.value = "";
+  filterCat.value = "";
+  loadExpenses();
+};
+
+// Handle Sorting Click
+document.querySelectorAll("th.sortable").forEach((header) => {
+  header.addEventListener("click", () => {
+    const field = header.getAttribute("data-sort");
+
+    if (currentSortField === field) {
+      currentSortField = `-${field}`;
+    } else {
+      currentSortField = field;
+    }
+
+    updateSortIcons(header, currentSortField);
+    loadExpenses();
+  });
+});
+
+function updateSortIcons(clickedHeader, sortField) {
+  document
+    .querySelectorAll(".sort-icon")
+    .forEach((icon) => (icon.textContent = "↕"));
+  const icon = clickedHeader.querySelector(".sort-icon");
+  icon.textContent = sortField.startsWith("-") ? "↓" : "↑";
+}
+
+// --- Functions ---
+
 async function loadCategories() {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/categories/", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Failed to load categories:", text);
-      alert("Failed to load categories. See console for details.");
-      return;
-    }
+    if (!response.ok) return;
 
     const categories = await response.json();
+
     categorySelect.innerHTML = `<option value="">Select category</option>`;
+    filterCat.innerHTML = `<option value="">All Categories</option>`;
+
     categories.forEach((cat) => {
       const option = document.createElement("option");
       option.value = cat.id;
       option.textContent = cat.name;
-      categorySelect.appendChild(option);
+
+      categorySelect.appendChild(option.cloneNode(true));
+      filterCat.appendChild(option.cloneNode(true));
     });
   } catch (err) {
     console.error("Error loading categories:", err);
-    alert("Error loading categories. See console for details.");
   }
 }
 
-// Load expenses
 async function loadExpenses() {
+  let url = new URL("http://127.0.0.1:8000/api/expenses/");
+
+  if (filterStart.value)
+    url.searchParams.append("start_date", filterStart.value);
+  if (filterEnd.value) url.searchParams.append("end_date", filterEnd.value);
+  if (filterCat.value) url.searchParams.append("category", filterCat.value);
+  url.searchParams.append("ordering", currentSortField);
+
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/expenses/", {
+    const response = await fetch(url, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    if (response.status === 401) {
-      localStorage.clear();
-      window.location.href = "login.html";
-      return;
-    }
+    if (response.status === 401) window.location.href = "login.html";
 
-    let data;
-    try {
-      data = await response.json();
-    } catch (err) {
-      const text = await response.text();
-      console.error("Failed to parse JSON from /api/expenses/:", text);
-      alert("Failed to load expenses. See console for details.");
-      return;
-    }
-
+    const data = await response.json();
     renderExpenses(data);
   } catch (err) {
     console.error("Error fetching expenses:", err);
-    alert("Error loading expenses. See console for details.");
   }
 }
 
-// Render expenses in table
 function renderExpenses(expenses) {
   table.innerHTML = "";
+
+  // --- Stats Calculation Variables ---
+  let totalAll = 0;
+  let totalMonth = 0;
+  const count = expenses.length;
+
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentYear = now.getFullYear();
+
   if (!expenses || expenses.length === 0) {
-    table.innerHTML = `<tr><td colspan="5" class="empty">No expenses yet</td></tr>`;
+    table.innerHTML = `<tr><td colspan="6" class="empty">No expenses found</td></tr>`;
+    updateStats(0, 0, 0); // Reset stats to zero
     return;
   }
 
   expenses.forEach((exp) => {
-    table.innerHTML += `
-      <tr>
-        <td>${exp.date}</td>
-        <td>${exp.category_name || ""}</td>
-        <td>${exp.title || ""}</td>
-        <td>${exp.note || ""}</td>
-        <td>₱${exp.amount || 0}</td>
-        <td class="actions">
-          <button class="btn ghost" onclick="editExpense(${
-            exp.id
-          })">Edit</button>
-          <button class="btn ghost" onclick="deleteExpense(${
-            exp.id
-          })">Delete</button>
-        </td>
-      </tr>
-    `;
+    // 1. Calculate Total Amount (All visible records)
+    const amount = parseFloat(exp.amount) || 0;
+    totalAll += amount;
+
+    // 2. Calculate "This Month" (Based on the 'date' field from API)
+    const expDate = new Date(exp.date);
+    if (
+      expDate.getMonth() === currentMonth &&
+      expDate.getFullYear() === currentYear
+    ) {
+      totalMonth += amount;
+    }
+
+    // --- Existing Row Rendering Code ---
+    const row = document.createElement("tr");
+    row.innerHTML = `
+            <td>${exp.date}</td>
+            <td><span class="category-badge">${
+              exp.category_name || "Uncategorized"
+            }</span></td>
+            <td>${exp.title || ""}</td>
+            <td>${exp.note || ""}</td>
+            <td class="amount">₱${amount.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+            })}</td>
+            <td class="actions">
+                <button class="btn ghost edit-btn">Edit</button>
+                <button class="btn ghost delete-btn">Delete</button>
+            </td>
+        `;
+
+    row.querySelector(".edit-btn").onclick = () => editExpense(exp.id);
+    row.querySelector(".delete-btn").onclick = () => deleteExpense(exp.id);
+    table.appendChild(row);
   });
+
+  // 3. Update the UI cards
+  updateStats(totalAll, totalMonth, count);
 }
 
-// Edit expense
+// Helper function to push values to the HTML
+function updateStats(total, month, count) {
+  document.getElementById(
+    "totalExpenses"
+  ).textContent = `₱${total.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+  })}`;
+  document.getElementById(
+    "monthExpenses"
+  ).textContent = `₱${month.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+  })}`;
+  document.getElementById("totalCount").textContent = count;
+}
+
 async function editExpense(id) {
   try {
     const response = await fetch(`http://127.0.0.1:8000/api/expenses/${id}/`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    if (!response.ok) throw new Error("Could not fetch expense details");
+    if (!response.ok) throw new Error("Could not fetch details");
 
     const exp = await response.json();
-
     editingExpenseId = id;
-
-    await loadCategories();
 
     document.getElementById("date").value = exp.date;
     document.getElementById("category").value = exp.category_id;
@@ -139,43 +211,51 @@ async function editExpense(id) {
     modal.classList.remove("hidden");
   } catch (err) {
     console.error(err);
-    alert("Error loading expense data.");
   }
 }
 
-// Delete expense
-async function deleteExpense(id) {
-  if (!confirm("Delete this expense?")) return;
+function deleteExpense(id) {
+  idToDelete = id;
+  deleteModal.classList.remove("hidden");
+}
+
+document.getElementById("cancelDeleteBtn").onclick = () => {
+  deleteModal.classList.add("hidden");
+  idToDelete = null;
+};
+
+document.getElementById("confirmDeleteBtn").onclick = async () => {
+  if (!idToDelete) return;
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/expenses/${id}/`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/expenses/${idToDelete}/`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Failed to delete expense:", text);
-      alert("Failed to delete expense. See console for details.");
-      return;
+    if (response.ok) {
+      deleteModal.classList.add("hidden");
+      idToDelete = null;
+      loadExpenses();
     }
-
-    loadExpenses();
   } catch (err) {
-    console.error("Error deleting expense:", err);
-    alert("Error deleting expense. See console for details.");
+    console.error("Error deleting:", err);
   }
-}
+};
 
-// Submit form
 form.onsubmit = async function (e) {
   e.preventDefault();
 
   const payload = {
     date: document.getElementById("date").value,
-    category_id: category.value ? parseInt(category.value) : null,
+    category_id: categorySelect.value ? parseInt(categorySelect.value) : null,
     title: document.getElementById("title").value,
     note: document.getElementById("note").value,
-    amount: amount.value ? parseFloat(amount.value) : null,
+    amount: document.getElementById("amount").value
+      ? parseFloat(document.getElementById("amount").value)
+      : null,
   };
 
   let url = "http://127.0.0.1:8000/api/expenses/";
@@ -196,20 +276,15 @@ form.onsubmit = async function (e) {
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Save failed:", text);
-      alert("Failed to save expense.");
-      return;
+    if (response.ok) {
+      modal.classList.add("hidden");
+      editingExpenseId = null;
+      loadExpenses();
     }
-
-    modal.classList.add("hidden");
-    editingExpenseId = null;
-    loadExpenses();
   } catch (err) {
-    console.error("Error saving expense:", err);
+    console.error("Error saving:", err);
   }
 };
 
-// Initial load
+loadCategories();
 loadExpenses();

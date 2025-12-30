@@ -10,7 +10,7 @@
 
 <body>
     <nav class="navbar">
-        <h1>Expense Tracker</h1>
+        <h1>💰 Expense Tracker</h1>
         <div class="nav-actions">
             <a href="dashboard.html" class="btn ghost">Dashboard</a>
             <button id="logoutBtn" class="btn logout">Logout</button>
@@ -18,31 +18,40 @@
     </nav>
 
     <main class="container">
-        <section class="summary">
-            <div>
-                <h2>Categories</h2>
-                <p class="subtitle">Manage your expense categories</p>
-            </div>
+        <div class="header-section">
+            <h2>Categories</h2>
+            <p class="subtitle">Manage your expense categories</p>
+        </div>
 
+        <div class="stats-card">
+            <div class="stat-label">Total Categories</div>
+            <div class="stat-value" id="totalCategories">0</div>
+        </div>
+
+        <div class="action-bar">
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: #0f172a;">All Categories</h3>
             <button id="openModalBtn" class="btn primary">
                 + Add Category
             </button>
-        </section>
+        </div>
 
         <section class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="categoryTable">
-                    <tr>
-                        <td colspan="2" class="empty">No categories yet</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category Name</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTable">
+                        <tr>
+                            <td colspan="2" class="empty">No categories yet. Add your first category to get started!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
@@ -50,12 +59,16 @@
     <div id="categoryModal" class="modal hidden">
         <div class="modal-card">
             <h3 id="modalTitle">Add Category</h3>
+            <p class="modal-subtitle">Enter a name for your category</p>
 
-            <input type="text" id="categoryName" placeholder="Category name" required />
+            <div class="form-group">
+                <label class="form-label" for="categoryName">Category Name</label>
+                <input type="text" id="categoryName" placeholder="e.g., Food, Transport, Entertainment" required />
+            </div>
 
             <div class="modal-actions">
-                <button id="saveCategoryBtn" class="btn primary">Save</button>
                 <button id="cancelBtn" class="btn ghost">Cancel</button>
+                <button id="saveCategoryBtn" class="btn primary">Save Category</button>
             </div>
         </div>
     </div>

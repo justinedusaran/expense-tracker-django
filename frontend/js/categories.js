@@ -43,18 +43,30 @@ async function loadCategories() {
 }
 
 function renderCategories(categories) {
-  table.innerHTML = "";
+  // Use a specific variable for the categories table to avoid conflicts
+  const categoryTable = document.getElementById("categoriesTable");
+  const totalCategoriesEl = document.getElementById("totalCategories");
+
+  // Safety check: make sure the elements exist on the page
+  if (!categoryTable) return;
+
+  categoryTable.innerHTML = "";
+
+  // Update the stat card count
+  if (totalCategoriesEl) {
+    totalCategoriesEl.textContent = categories.length;
+  }
 
   if (categories.length === 0) {
-    table.innerHTML = `<tr><td colspan="2" class="empty">No categories yet</td></tr>`;
+    categoryTable.innerHTML = `<tr><td colspan="2" class="empty">No categories yet</td></tr>`;
     return;
   }
 
   categories.forEach((cat) => {
-    table.innerHTML += `
+    categoryTable.innerHTML += `
       <tr>
         <td>${cat.name}</td>
-        <td>
+        <td class="actions">
           <button class="btn ghost" onclick="editCategory(${cat.id}, '${cat.name}')">Edit</button>
           <button class="btn ghost" onclick="deleteCategory(${cat.id})">Delete</button>
         </td>

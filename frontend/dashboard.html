@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8" />
     <title>Dashboard | Expense Tracker</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />    
     <link rel="stylesheet" href="css/dashboard.css" />
 </head>
 
 <body>
-
     <nav class="navbar">
-        <h1>Expense Tracker</h1>
+        <h1>💰 Expense Tracker</h1>
         <div class="nav-actions">
             <a href="categories.html" class="btn ghost">Manage Categories</a>
             <button id="logoutBtn" class="btn logout">Logout</button>
@@ -19,74 +18,132 @@
     </nav>
 
     <main class="container">
-        <section class="summary">
-            <div>
-                <h2>Expenses</h2>
-                <p class="subtitle">Track and manage your spending</p>
-            </div>
+        <div class="header-section">
+            <h2>Dashboard</h2>
+            <p class="subtitle">Track and manage your spending</p>
+        </div>
 
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-label">Total Expenses</div>
+                <div class="stat-value" id="totalExpenses">₱0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">This Month</div>
+                <div class="stat-value" id="monthExpenses">₱0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Records</div>
+                <div class="stat-value" id="totalCount">0</div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: #0f172a;">All Expenses</h3>
             <button id="addExpenseBtn" class="btn primary">
                 + Add Expense
             </button>
-        </section>
+        </div>
 
         <section class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Title</th>
-                        <th>Note</th>
-                        <th>Amount</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="expensesTable">
-                    <tr>
-                        <td colspan="5" class="empty">
-                            No expenses yet
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-toolbar">
+                <div class="filter-group">
+                    <label class="filter-label">From Date</label>
+                    <input type="date" id="filterStartDate">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">To Date</label>
+                    <input type="date" id="filterEndDate">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select id="filterCategory">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button id="applyFiltersBtn" class="btn primary sm">Apply</button>
+                    <button id="clearFiltersBtn" class="btn ghost sm">Clear</button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="date">Date <span class="sort-icon">↕</span></th>
+                            <th>Category</th>
+                            <th>Title</th>
+                            <th>Note</th>
+                            <th class="sortable" data-sort="amount">Amount <span class="sort-icon">↕</span></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTable">
+                        <tr>
+                            <td class="empty" colspan="6">No expenses found. Add your first expense to get started!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
-
-    <div id="categoryModal" class="modal hidden">
-        <div class="modal-card">
-            <h3 id="modalTitle">Add Category</h3>
-    
-            <input type="text" id="newCategoryName" placeholder="Category name" />
-    
-            <div class="modal-actions">
-                <button id="saveCategoryBtn" class="btn primary">Save</button>
-                <button id="cancelCategoryBtn" class="btn ghost">Cancel</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Add/Edit Modal -->
     <div id="expenseModal" class="modal hidden">
         <div class="modal-card">
             <h3 id="modalTitle">Add Expense</h3>
+            <p class="modal-subtitle">Fill in the details below</p>
 
             <form id="expenseForm">
                 <input type="hidden" id="expenseId" />
 
-                <input type="date" id="date" required />
-                <select id="category" required>
-                    <option value="">Select category</option>
-                </select>
-                <input type="text" id="title" placeholder="Title" />
-                <input type="text" id="note" placeholder="Note" />
-                <input type="number" id="amount" placeholder="Amount" required />
+                <div class="form-group">
+                    <label class="form-label" for="date">Date</label>
+                    <input type="date" id="date" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="category">Category</label>
+                    <select id="category" required>
+                        <option value="">Select category</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="title">Title</label>
+                    <input type="text" id="title" placeholder="e.g., Grocery shopping" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="note">Note (Optional)</label>
+                    <input type="text" id="note" placeholder="Add any additional details" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="amount">Amount (₱)</label>
+                    <input type="number" id="amount" placeholder="0.00" step="0.01" required />
+                </div>
 
                 <div class="modal-actions">
-                    <button type="submit" class="btn primary">Save</button>
-                    <button type="button" id="cancelBtn" class="btn primary">Cancel</button>
+                    <button type="button" id="cancelBtn" class="btn ghost">Cancel</button>
+                    <button type="submit" class="btn primary">Save Expense</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal hidden">
+        <div class="modal-card">
+            <h3>Delete Expense</h3>
+            <p class="modal-subtitle">
+                Are you sure you want to delete this expense? This action cannot be undone.
+            </p>
+            <div class="modal-actions">
+                <button id="cancelDeleteBtn" class="btn ghost">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn logout">Delete</button>
+            </div>
         </div>
     </div>
 
