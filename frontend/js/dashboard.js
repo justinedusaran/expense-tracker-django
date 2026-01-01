@@ -9,10 +9,16 @@ const filterStart = document.getElementById("filterStartDate");
 const filterEnd = document.getElementById("filterEndDate");
 const filterCat = document.getElementById("filterCategory");
 const deleteModal = document.getElementById("deleteModal");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageInfo = document.getElementById("pageInfo");
 
 let idToDelete = null;
 let currentSortField = "-date";
 let editingExpenseId = null;
+let allExpenses = [];
+let currentPage = 1;
+const itemsPerPage = 3;
 
 // --- Event Listeners ---
 
@@ -39,6 +45,21 @@ document.getElementById("clearFiltersBtn").onclick = () => {
   filterEnd.value = "";
   filterCat.value = "";
   loadExpenses();
+};
+
+prevPageBtn.onclick = () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderCurrentPage();
+  }
+};
+
+nextPageBtn.onclick = () => {
+  const totalPages = Math.ceil(allExpenses.length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderCurrentPage();
+  }
 };
 
 // Handle Sorting Click
@@ -110,10 +131,30 @@ async function loadExpenses() {
     if (response.status === 401) window.location.href = "login.html";
 
     const data = await response.json();
-    renderExpenses(data);
+    allExpenses = data;
+    currentPage = 1;
+    renderCurrentPage();
   } catch (err) {
     console.error("Error fetching expenses:", err);
   }
+}
+
+function renderCurrentPage() {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const pageExpenses = allExpenses.slice(startIndex, endIndex);
+
+  renderExpenses(pageExpenses);
+  updatePaginationUI();
+}
+
+function updatePaginationUI() {
+  const totalPages = Math.ceil(allExpenses.length / itemsPerPage) || 1;
+
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+  prevPageBtn.disabled = currentPage === 1;
+  nextPageBtn.disabled = currentPage >= totalPages || allExpenses.length === 0;
 }
 
 function renderExpenses(expenses) {
@@ -122,24 +163,25 @@ function renderExpenses(expenses) {
   // --- Stats Calculation Variables ---
   let totalAll = 0;
   let totalMonth = 0;
-  const count = expenses.length;
+  const count = allExpenses.length;
 
   const now = new Date();
-  const currentMonth = now.getMonth(); // 0-11
+  const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
   if (!expenses || expenses.length === 0) {
     table.innerHTML = `<tr><td colspan="6" class="empty">No expenses found</td></tr>`;
-    updateStats(0, 0, 0); // Reset stats to zero
+    if (allExpenses.length === 0) {
+      updateStats(0, 0, 0);
+    }
     return;
   }
 
-  expenses.forEach((exp) => {
-    // 1. Calculate Total Amount (All visible records)
+  // Calculate stats from ALL expenses, not just current page
+  allExpenses.forEach((exp) => {
     const amount = parseFloat(exp.amount) || 0;
     totalAll += amount;
 
-    // 2. Calculate "This Month" (Based on the 'date' field from API)
     const expDate = new Date(exp.date);
     if (
       expDate.getMonth() === currentMonth &&
@@ -147,8 +189,12 @@ function renderExpenses(expenses) {
     ) {
       totalMonth += amount;
     }
+  });
 
-    // --- Existing Row Rendering Code ---
+  // Render only current page expenses
+  expenses.forEach((exp) => {
+    const amount = parseFloat(exp.amount) || 0;
+
     const row = document.createElement("tr");
     row.innerHTML = `
             <td>${exp.date}</td>
@@ -171,11 +217,9 @@ function renderExpenses(expenses) {
     table.appendChild(row);
   });
 
-  // 3. Update the UI cards
   updateStats(totalAll, totalMonth, count);
 }
 
-// Helper function to push values to the HTML
 function updateStats(total, month, count) {
   document.getElementById(
     "totalExpenses"

@@ -1,11 +1,20 @@
 const accessToken = localStorage.getItem("access");
 if (!accessToken) window.location.href = "login.html";
 
-const table = document.getElementById("categoryTable");
+const table = document.getElementById("categoriesTable");
 const modal = document.getElementById("categoryModal");
 const categoryNameInput = document.getElementById("categoryName");
 const modalTitle = document.getElementById("modalTitle");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageInfo = document.getElementById("pageInfo");
+
 let editingCategoryId = null;
+let allCategories = [];
+let currentPage = 1;
+const itemsPerPage = 4;
+
+// --- Event Listeners ---
 
 // Logout
 document.getElementById("logoutBtn").onclick = () => {
@@ -26,6 +35,24 @@ document.getElementById("cancelBtn").onclick = () => {
   modal.classList.add("hidden");
 };
 
+// Pagination controls
+prevPageBtn.onclick = () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderCurrentPage();
+  }
+};
+
+nextPageBtn.onclick = () => {
+  const totalPages = Math.ceil(allCategories.length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderCurrentPage();
+  }
+};
+
+// --- Functions ---
+
 // Load categories
 async function loadCategories() {
   const response = await fetch("http://127.0.0.1:8000/api/categories/", {
@@ -39,39 +66,66 @@ async function loadCategories() {
   }
 
   const categories = await response.json();
-  renderCategories(categories);
+  allCategories = categories;
+  currentPage = 1;
+  renderCurrentPage();
+}
+
+function renderCurrentPage() {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const pageCategories = allCategories.slice(startIndex, endIndex);
+
+  renderCategories(pageCategories);
+  updatePaginationUI();
+}
+
+function updatePaginationUI() {
+  const totalPages = Math.ceil(allCategories.length / itemsPerPage) || 1;
+
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+  prevPageBtn.disabled = currentPage === 1;
+  nextPageBtn.disabled =
+    currentPage >= totalPages || allCategories.length === 0;
 }
 
 function renderCategories(categories) {
-  // Use a specific variable for the categories table to avoid conflicts
   const categoryTable = document.getElementById("categoriesTable");
   const totalCategoriesEl = document.getElementById("totalCategories");
 
-  // Safety check: make sure the elements exist on the page
   if (!categoryTable) return;
 
   categoryTable.innerHTML = "";
 
-  // Update the stat card count
+  // Update the stat card count with ALL categories
   if (totalCategoriesEl) {
-    totalCategoriesEl.textContent = categories.length;
+    totalCategoriesEl.textContent = allCategories.length;
   }
 
   if (categories.length === 0) {
     categoryTable.innerHTML = `<tr><td colspan="2" class="empty">No categories yet</td></tr>`;
+    if (allCategories.length === 0) {
+      if (totalCategoriesEl) totalCategoriesEl.textContent = "0";
+    }
     return;
   }
 
   categories.forEach((cat) => {
-    categoryTable.innerHTML += `
-      <tr>
-        <td>${cat.name}</td>
-        <td class="actions">
-          <button class="btn ghost" onclick="editCategory(${cat.id}, '${cat.name}')">Edit</button>
-          <button class="btn ghost" onclick="deleteCategory(${cat.id})">Delete</button>
-        </td>
-      </tr>
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${cat.name}</td>
+      <td class="actions" style="text-align: right;">
+        <button class="btn ghost edit-btn">Edit</button>
+        <button class="btn ghost delete-btn">Delete</button>
+      </td>
     `;
+
+    row.querySelector(".edit-btn").onclick = () =>
+      editCategory(cat.id, cat.name);
+    row.querySelector(".delete-btn").onclick = () => deleteCategory(cat.id);
+
+    categoryTable.appendChild(row);
   });
 }
 
