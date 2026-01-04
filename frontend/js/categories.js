@@ -1,5 +1,5 @@
 const accessToken = localStorage.getItem("access");
-if (!accessToken) window.location.href = "login.html";
+if (!accessToken) window.location.href = "auth.html";
 
 const table = document.getElementById("categoriesTable");
 const modal = document.getElementById("categoryModal");
@@ -19,7 +19,7 @@ const itemsPerPage = 4;
 // Logout
 document.getElementById("logoutBtn").onclick = () => {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "auth.html";
 };
 
 // Open modal for adding category
@@ -61,7 +61,7 @@ async function loadCategories() {
 
   if (response.status === 401) {
     localStorage.clear();
-    window.location.href = "login.html";
+    window.location.href = "auth.html";
     return;
   }
 

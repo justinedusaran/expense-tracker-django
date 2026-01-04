@@ -1,5 +1,5 @@
 const accessToken = localStorage.getItem("access");
-if (!accessToken) window.location.href = "login.html";
+if (!accessToken) window.location.href = "auth.html";
 
 const API_URL = "http://127.0.0.1:8000/api/expenses/";
 
@@ -14,7 +14,7 @@ let monthlyChart;
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "auth.html";
 });
 
 // --- Load Analytics ---
@@ -31,7 +31,7 @@ async function loadAnalytics() {
 
     if (res.status === 401) {
       localStorage.clear();
-      window.location.href = "login.html";
+      window.location.href = "auth.html";
       return;
     }
 

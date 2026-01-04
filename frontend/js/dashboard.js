@@ -1,5 +1,5 @@
 const accessToken = localStorage.getItem("access");
-if (!accessToken) window.location.href = "login.html";
+if (!accessToken) window.location.href = "auth.html";
 
 const table = document.getElementById("expensesTable");
 const modal = document.getElementById("expenseModal");
@@ -24,7 +24,7 @@ const itemsPerPage = 3;
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.href = "auth.html";
 });
 
 document.getElementById("addExpenseBtn").onclick = () => {
@@ -128,7 +128,7 @@ async function loadExpenses() {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    if (response.status === 401) window.location.href = "login.html";
+    if (response.status === 401) window.location.href = "auth.html";
 
     const data = await response.json();
     allExpenses = data;
