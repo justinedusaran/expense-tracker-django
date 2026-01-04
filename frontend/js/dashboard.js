@@ -90,9 +90,12 @@ function updateSortIcons(clickedHeader, sortField) {
 
 async function loadCategories() {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/categories/", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await fetch(
+      "https://expense-tracker-api-9lnt.onrender.com/api/categories/",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
 
     if (!response.ok) return;
 
@@ -115,7 +118,9 @@ async function loadCategories() {
 }
 
 async function loadExpenses() {
-  let url = new URL("http://127.0.0.1:8000/api/expenses/");
+  let url = new URL(
+    "https://expense-tracker-api-9lnt.onrender.com/api/expenses/"
+  );
 
   if (filterStart.value)
     url.searchParams.append("start_date", filterStart.value);
@@ -236,9 +241,12 @@ function updateStats(total, month, count) {
 
 async function editExpense(id) {
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/expenses/${id}/`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const response = await fetch(
+      `https://expense-tracker-api-9lnt.onrender.com/api/expenses/${id}/`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
 
     if (!response.ok) throw new Error("Could not fetch details");
 
@@ -272,7 +280,7 @@ document.getElementById("confirmDeleteBtn").onclick = async () => {
   if (!idToDelete) return;
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/api/expenses/${idToDelete}/`,
+      `https://expense-tracker-api-9lnt.onrender.com/api/expenses/${idToDelete}/`,
       {
         method: "DELETE",
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -302,7 +310,7 @@ form.onsubmit = async function (e) {
       : null,
   };
 
-  let url = "http://127.0.0.1:8000/api/expenses/";
+  let url = "https://expense-tracker-api-9lnt.onrender.com/api/expenses/";
   let method = "POST";
 
   if (editingExpenseId) {

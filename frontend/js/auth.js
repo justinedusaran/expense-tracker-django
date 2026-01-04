@@ -35,13 +35,16 @@ loginForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
+    const response = await fetch(
+      "https://expense-tracker-api-9lnt.onrender.com/api/token/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      }
+    );
 
     const data = await response.json();
 
@@ -85,11 +88,14 @@ registerForm.addEventListener("submit", async (e) => {
   }
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/register/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
-    });
+    const response = await fetch(
+      "https://expense-tracker-api-9lnt.onrender.com/api/register/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      }
+    );
 
     if (response.ok) {
       // Show success modal

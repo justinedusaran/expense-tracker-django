@@ -1,7 +1,7 @@
 const accessToken = localStorage.getItem("access");
 if (!accessToken) window.location.href = "index.html";
 
-const API_URL = "http://127.0.0.1:8000/api/expenses/";
+const API_URL = "https://expense-tracker-api-9lnt.onrender.com/api/expenses/";
 
 const totalExpensesEl = document.getElementById("totalExpenses");
 const monthlyAverageEl = document.getElementById("monthlyAverage");

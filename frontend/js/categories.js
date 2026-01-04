@@ -55,9 +55,12 @@ nextPageBtn.onclick = () => {
 
 // Load categories
 async function loadCategories() {
-  const response = await fetch("http://127.0.0.1:8000/api/categories/", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  const response = await fetch(
+    "https://expense-tracker-api-9lnt.onrender.com/api/categories/",
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
 
   if (response.status === 401) {
     localStorage.clear();
@@ -134,7 +137,7 @@ document.getElementById("saveCategoryBtn").onclick = async () => {
   const name = categoryNameInput.value.trim();
   if (!name) return alert("Category name is required");
 
-  let url = "http://127.0.0.1:8000/api/categories/";
+  let url = "https://expense-tracker-api-9lnt.onrender.com/api/categories/";
   let method = "POST";
 
   if (editingCategoryId) {
@@ -173,10 +176,13 @@ function editCategory(id, name) {
 async function deleteCategory(id) {
   if (!confirm("Delete this category?")) return;
 
-  await fetch(`http://127.0.0.1:8000/api/categories/${id}/`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  await fetch(
+    `https://expense-tracker-api-9lnt.onrender.com/api/categories/${id}/`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
 
   loadCategories();
 }
