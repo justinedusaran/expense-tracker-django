@@ -109,7 +109,8 @@ DATABASES = {
     }
 }
 
-
+SECRET_KEY = os.environ.get("SECRET_KEY", "unsafe-secret-for-local")
+DEBUG = os.environ.get("DEBUG") == "True"
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
