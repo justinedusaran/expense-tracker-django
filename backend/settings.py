@@ -14,9 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 import dj_database_url
-import pymysql
-
-pymysql.install_as_MySQLdb()
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-*x8+be&&p1p9-x1%^rl&8d9s!q-=7^s*gxp12)j4jf$0br-419"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -98,10 +94,14 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+    "default": dj_database_url.config(
+        default=DATABASE_URL,
         conn_max_age=600,
     )
 }
