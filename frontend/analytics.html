@@ -3,22 +3,21 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Analytics | Expense Tracker</title>
+    <title>Analytics | ExpenSense</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <link rel="stylesheet" href="css/analytics.css" />
 </head>
 
 <body>
     <div class="app-layout">
+
+        <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="logo">💰</div>
+            <div class="logo">🌿</div>
 
             <a href="dashboard.html" class="nav-link" title="Dashboard">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="7" height="7"></rect>
                     <rect x="14" y="3" width="7" height="7"></rect>
@@ -26,16 +25,18 @@
                     <rect x="3" y="14" width="7" height="7"></rect>
                 </svg>
             </a>
+
             <a href="categories.html" class="nav-link" title="Categories">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 7h16"></path>
                     <path d="M4 12h16"></path>
                     <path d="M4 17h10"></path>
                 </svg>
             </a>
+
             <a href="analytics.html" class="nav-link active" title="Analytics">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="20" x2="12" y2="10"></line>
                     <line x1="18" y1="20" x2="18" y2="4"></line>
@@ -53,13 +54,14 @@
             </button>
         </nav>
 
+        <!-- Main -->
         <main class="container">
+
             <div class="header-section">
                 <h2>Analytics</h2>
                 <p class="subtitle">Visual overview of your spending patterns</p>
             </div>
 
-            <!-- Summary cards -->
             <div class="stats-grid">
                 <div class="stat-card primary">
                     <div class="stat-label">Highest Category</div>
@@ -75,23 +77,23 @@
                 </div>
             </div>
 
-            <!-- Charts -->
             <section class="card">
                 <div class="chart-grid">
                     <div class="chart-card">
                         <h3>Expenses by Category</h3>
                         <canvas id="categoryChart"></canvas>
                     </div>
-
                     <div class="chart-card">
                         <h3>Monthly Expenses</h3>
                         <canvas id="monthlyChart"></canvas>
                     </div>
                 </div>
             </section>
-        </main>
 
-        <script src="js/analytics.js"></script>
+        </main>
+    </div>
+
+    <script src="js/analytics.js"></script>
 </body>
 
 </html>
