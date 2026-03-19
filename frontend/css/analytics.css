@@ -225,7 +225,7 @@ body {
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  overflow: auto;
+  overflow: hidden;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -236,21 +236,21 @@ body {
 .chart-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 1.25rem;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
 }
 
 .chart-card {
   background: var(--off-white);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 1.1rem 1.25rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  position: relative;
-  height: 300px;
+  min-height: 350px;
 }
 
 .chart-card h3 {
@@ -259,14 +259,19 @@ body {
   color: var(--text-mid);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
   flex-shrink: 0;
 }
 
-.chart-card canvas {
+.chart-wrapper {
+  position: relative;
   flex: 1;
   min-height: 0;
-  width: 100% !important;
+  width: 100%;
+}
+
+.chart-wrapper canvas {
+  display: block;
 }
 
 /* ── Buttons ── */
@@ -334,16 +339,6 @@ body {
   .container {
     padding: 1.25rem;
   }
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-  .chart-card {
-    height: 280px;
-  }
-  .card {
-    flex: none;
-    overflow: visible;
-  }
 }
 
 @media (max-width: 768px) {
@@ -378,6 +373,7 @@ body {
   .logo {
     display: none;
   }
+
   .sidebar .btn.logout {
     margin-top: 0;
   }
@@ -392,18 +388,25 @@ body {
   .stats-grid {
     grid-template-columns: 1fr 1fr;
   }
+
   .stats-grid .stat-card:first-child {
     grid-column: 1 / -1;
   }
 
+  .card {
+    flex: none;
+    overflow: visible;
+  }
+
   .chart-grid {
     grid-template-columns: 1fr;
-    gap: 0.85rem;
     padding: 1rem;
+    overflow-y: visible;
   }
 
   .chart-card {
-    height: 260px;
+    min-height: 300px;
+    width: 100%;
   }
 }
 
@@ -411,10 +414,8 @@ body {
   .stats-grid {
     grid-template-columns: 1fr;
   }
+
   .stats-grid .stat-card:first-child {
     grid-column: auto;
-  }
-  .chart-card {
-    height: 230px;
   }
 }

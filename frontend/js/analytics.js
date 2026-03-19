@@ -68,7 +68,7 @@ function computeSummary(expenses) {
   });
 
   const topCategory = Object.entries(categoryTotals).sort(
-    (a, b) => b[1] - a[1]
+    (a, b) => b[1] - a[1],
   )[0];
 
   const monthCount = Object.keys(monthlyTotals).length || 1;
@@ -79,7 +79,7 @@ function computeSummary(expenses) {
 
   monthlyAverageEl.textContent = `₱${(total / monthCount).toLocaleString(
     undefined,
-    { minimumFractionDigits: 2 }
+    { minimumFractionDigits: 2 },
   )}`;
 
   topCategoryEl.textContent = topCategory ? topCategory[0] : "—";
@@ -186,7 +186,7 @@ function renderMonthlyChart(expenses) {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           display: false,
